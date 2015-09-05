@@ -1,11 +1,10 @@
-require 'tzinfo'
-
 FIRST_NAME = 'First'
 LAST_NAME = 'Last'
 PHONE = '5555551212'
 EMAIL = 'email@domain.com'
 
 # DON'T CHANGE ANYTHING BELOW THIS LINE
+require 'tzinfo'
 
 DATE_FORMAT = "%I:%M %p %m/%d/%y"
 
@@ -24,7 +23,7 @@ zi.each_with_index do |zone, index|
   puts "#{index} - #{zone}"
 end
 
-print 'Departure Time Zone: '
+print 'Departure Airport Time Zone: '
 
 departure_time_zone = zi[gets.chomp.to_i]
 
