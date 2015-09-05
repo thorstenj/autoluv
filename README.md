@@ -53,14 +53,14 @@ Your server will now check you in 24 hours before departure.
 
 1. An email notification will be sent with the results. There's a strong chance it will land in your junk/spam folder so check there if you don't see it. 
 1. If you're flying by yourself, you will get a text message with links to your boarding pass.
-1. If more than one person is attached to your confirmation number, you will _not_ get a text message. You will still be checked-in, however, you will need to print your parties boarding passes when you get to the airport. 
+1. If more than one person is attached to your confirmation number, you will _not_ get a text message. You will still be checked-in, however, you will need to print your boarding passes when you get to the airport. 
 1. You can view/remove pending check-ins using the `atq` and `atrm` commands respectively. 
 
 ### Example Session
 
 Below is an example session. It's fairly straightforward, but I want to highlight one thing. 
 
-Notice I type `10` when asked for the Depature Airport Time Zone. That number represents the Chicago time zone in the list. 
+Notice I type `10` when asked for the Departure Airport Time Zone. That number represents the Chicago time zone in the list. 
 
 You'll most commonly use:
 
