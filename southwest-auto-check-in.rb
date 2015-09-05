@@ -2,7 +2,7 @@ require 'mechanize'
 require 'pony'
 
 class SouthwestAutoCheckIn
-	CHECK_IN_PAGE = 'https://www.southwest.com/flight/retrieveCheckinDoc.html'
+  CHECK_IN_PAGE = 'https://www.southwest.com/flight/retrieveCheckinDoc.html'
 
   def initialize(args)
     @confirmation_number = args[0]
@@ -53,15 +53,15 @@ class SouthwestAutoCheckIn
   private
 
   def retrieve_itinerary()
-  	@page = @agent.get(CHECK_IN_PAGE)
+    @page = @agent.get(CHECK_IN_PAGE)
 
-  	itinerary = @page.form('retrieveItinerary')
+    itinerary = @page.form('retrieveItinerary')
 
-  	itinerary.confirmationNumber = @confirmation_number
-  	itinerary.firstName = @first_name
-  	itinerary.lastName = @last_name
+    itinerary.confirmationNumber = @confirmation_number
+    itinerary.firstName = @first_name
+    itinerary.lastName = @last_name
 
-  	@page = @agent.submit(itinerary)
+    @page = @agent.submit(itinerary)
 
     # using .list_errors instead of #errors because #errors is also used on the success page
     errors = @page.search('.list_errors li') 
