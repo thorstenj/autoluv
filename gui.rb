@@ -19,13 +19,19 @@ departure_date = gets.chomp
 
 zi = TZInfo::Country.get('US').zone_identifiers
 
+puts
+
 zi.each_with_index do |zone, index|
   puts "#{index} - #{zone}"
 end
 
+puts
+
 print 'Departure Airport Time Zone: '
 
 departure_time_zone = zi[gets.chomp.to_i]
+
+puts
 
 tz = TZInfo::Timezone.get(departure_time_zone)
 
