@@ -91,13 +91,26 @@ class SouthwestAutoCheckIn
   end
 
   def email_results()
-    subject = "[Southwest] Check-in succeeded after #{@attempts} attempt(s)"
-    body = ''
+    subject = 'Automatic check-in succeeded '
+    body = %Q(
+If there are multiple passengers checking in under the same confirmation number, you will not get a text message with your boarding pass. 
+
+Instead, you will need to print them at the airport or print them yourself. 
+
+To print them yourself, you will need to go through the check-in process manually. But don't worry, doing so won't affect your boarding order. 
+
+You can print your boarding pass using the following link:
+
+https://www.southwest.com/flight/retrieveCheckinDoc.html?confirmationNumber=#{@confirmation_number}&firstName=#{@first_name}&lastName=#{@last_name}
+      )
 
     if @errors.size > 0
-      subject = '[Southwest] Check-in failed'
+      subject = 'Automatic check-in failed '
+      body = ''
       @errors.each {|e| body += e + "\n" }
     end
+
+    subject += "for #{@first_name} #{@last_name} (#{@confirmation_number})"
 
     Pony.mail(:to => @email_address, :from => 'southwest-auto-check-in@localhost', :subject => subject, :body => body)
   end
