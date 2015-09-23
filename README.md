@@ -10,7 +10,7 @@
 * Ruby
 * Access to the `at` command
 * Git (not required, but will simplify installation)
-# Able to send email using `sendmail`
+* Able to send email using `sendmail`
 
 ### Installation
 
