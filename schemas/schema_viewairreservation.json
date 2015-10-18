@@ -1,0 +1,38 @@
+{
+  "type": "object",
+  "required": ["errmsg", "upComingInfo"],
+  "properties": {
+    "errmsg": { "type": "string" },
+  	"upComingInfo": {
+  		"type": "array",
+  		"minItems": 1,
+  		"items": {
+  			"type": "object",
+        "required": ["Depart1"],
+        "patternProperties": {
+          "^(Depart|Return)[0-9]$": {
+            "type": "object",
+            "required": ["departCity"],
+            "properties": {
+              "departCity": { "$ref": "definitions.json#/timeAndCity" }
+            }
+          },
+          "^Depart[0-9]$": {
+            "type": "object",
+            "required": ["departDate"],
+            "properties": {
+              "departDate": { "$ref": "definitions.json#/verboseDate" }
+            }
+          },
+          "^Return[0-9]$": {
+            "type": "object",
+            "required": ["returnDate"],
+            "properties": {
+              "returnDate": { "$ref": "definitions.json#/verboseDate" }
+            }
+          }
+        }
+  		}
+  	}
+  }
+}

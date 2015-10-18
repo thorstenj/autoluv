@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "required": ["errmsg", "confirmation_text"],
+  "properties": {
+    "errmsg": { "type": "string" },
+    "confirmation_text": { "type": "string" }
+    }
+}
