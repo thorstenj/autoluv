@@ -16,15 +16,17 @@
             "properties": {
               "departCity": { "$ref": "definitions.json#/timeAndCity" }
             }
-          },
-          "^Depart[0-9]$": {
+          }
+        },
+        "properties": {
+          "Depart1": {
             "type": "object",
             "required": ["departDate"],
             "properties": {
               "departDate": { "$ref": "definitions.json#/verboseDate" }
             }
           },
-          "^Return[0-9]$": {
+          "Return1": {
             "type": "object",
             "required": ["returnDate"],
             "properties": {
