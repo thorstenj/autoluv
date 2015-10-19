@@ -1,0 +1,55 @@
+{
+  "upComingInfo": [
+    {
+      "isCompanion": "false",
+      "chkinfirstName": "JANE",
+      "isInternationalPNR": "",
+      "cnclFirstName": "JANE",
+      "confirmationNumber": "Confirmation #HYJT73",
+      "Depart1": {
+        "travelTime": "Travel Time 2h 10m",
+        "departDate": "Monday, Oct 19, 2015",
+        "depfaretype": "Wanna Get Away",
+        "departstop2": "",
+        "departstop3": "",
+        "departCity": "03:10 PM Nashville, TN (BNA)",
+        "departFlightNo": "1573",
+        "departoperator": "",
+        "arrivalCity": "06:20 PM New York (LaGuardia), NY (LGA)",
+        "departstop1": ""
+      },
+      "TripName": "Nashville, TN - New York (LaGuardia), NY",
+      "isFlNotifAvailable": "false",
+      "cnclConfirmNo": "HYJT73",
+      "sfreqLastName": "DOE",
+      "chgFirstName": "JANE",
+      "arrivalCityName": "New York (LaGuardia), NY",
+      "chgLastName": "DOE",
+      "image0": "a-list_icon",
+      "Return1": {
+        "returnoperator": "",
+        "travelTime": "Travel Time 2h 35m",
+        "returnstop3": "",
+        "returnstop2": "",
+        "returnFlightNo": "106",
+        "retfaretype": "Anytime",
+        "departCity": "03:40 PM New York (LaGuardia), NY (LGA)",
+        "returnDate": "Wednesday, Oct 21, 2015",
+        "arrivalCity": "05:15 PM Nashville, TN (BNA)",
+        "returnstop1": ""
+      },
+      "chgConfirmNo": "HYJT73",
+      "chkinConfNo": "HYJT73",
+      "sfreqFirstName": "JANE",
+      "cnclLastName": "DOE",
+      "sfreqConfirmNo": "HYJT73",
+      "passengerName0": "Jane Doe",
+      "chkinlastName": "DOE"
+    }
+  ],
+  "itinerarylist": [],
+  "isMultiSegment": "false",
+  "opstatus": 0,
+  "tripHeader": "10/19/15 - New York",
+  "errmsg": ""
+}

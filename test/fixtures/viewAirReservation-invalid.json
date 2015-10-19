@@ -1,0 +1,28 @@
+{
+  "lastName": "Doe",
+  "confirmNumber": "ABCDEF",
+  "viewAirReservation_url": "https://www.southwest.com/flight/view-air-reservation.html?int=",
+  "httpStatusCode": 200,
+  "itinerarylist": [],
+  "hiddendetails": [
+    {
+      "name": "returnUrl",
+      "value": "/flight/view-air-reservation.html?int="
+    },
+    {
+      "name": "returnUrlForMaritz",
+      "value": ""
+    },
+    {
+      "name": "_rememberMe",
+      "value": "on"
+    }
+  ],
+  "viewAirReservation_hiddenjson": "{}",
+  "tripHeader": "",
+  "opstatus": "-123",
+  "tempupComingInfo": [],
+  "firstName": "Jane",
+  "errmsg": "We were unable to retrieve your reservation from our database. Verify the following: The confirmation number is entered correctly.The passenger name on the reservation is entered correctly.The reservation was purchased online via southwest.com or swabiz.com or mobile.southwest.com or Southwest Vacations. Purchases made through Southwest Groups, Southwest ticket counters, or other Travel Agencies cannot be accessed on southwest.com.If you have questions or require further assistance, please contact a Southwest Airlines Customer Representative at 1-800-I-FLY-SWA (1-800-435-9792).  (SW107023-yegbgkuOR4O5B_xiYfco0w)",
+  "carInfo": []
+}
