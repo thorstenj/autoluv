@@ -34,13 +34,15 @@ end
 command :checkin do |c|
   c.syntax = 'autoluv checkin [options]'
   c.description = 'Immediately check into a Southwest flight.'
-  c.example 'Typical Usage', 'autluv checkin -c ABCDEF -f John -l Doe'
+  c.example 'Check-in and get boarding passes via email', 'autoluv checkin -b email -e example@email.com -c ABCDEF -f John -l Doe'
+  c.example 'Check-in and get boarding passes via text message', 'autoluv checkin -b text -p 800-555-1212 -c ABCDEF -f John -l Doe'
+  c.example 'Check-in and print boarding passes later', 'autoluv checkin -c ABCDEF -f John -l Doe'
   c.option '-c', '--confirmation-number NUMBER', 'Required'
   c.option '-f', '--first-name NAME', 'Required'
   c.option '-l', '--last-name NAME', 'Required'
-  c.option '-b', '--boarding-pass OPTION', String, ["print", "email", "text"]
-  c.option '-p', '--phone NUMBER'
-  c.option '-e', '--email ADDRESS'
+  c.option '-b', '--boarding-pass OPTION', String, ["print", "email", "text"], "Valid options are: print, email, or text. If the --boarding-pass switch is not specified, print is assumed."
+  c.option '-p', '--phone NUMBER', "Required if --boarding-pass text is specified."
+  c.option '-e', '--email ADDRESS', "Required if --boarding-pass email is specified."
   c.action do |args, options|
     options.default :boarding_pass => "print"
 
