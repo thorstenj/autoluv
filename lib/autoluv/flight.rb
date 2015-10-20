@@ -37,7 +37,8 @@ module AutoLUV
 
     def self.airport_time_zone(airport_code)
       # TODO: marshal object to disk
-      CSV.foreach("../../../data/iata-america.tzmap", { :col_sep => "\t" }) do |row|
+      # TODO: handle paths better
+      CSV.foreach("../../../../data/iata-america.tzmap", { :col_sep => "\t" }) do |row|
         return row[1] if row[0].strip.upcase == airport_code.to_s.strip.upcase
       end
 

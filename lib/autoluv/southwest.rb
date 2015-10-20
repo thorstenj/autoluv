@@ -149,7 +149,7 @@ module AutoLUV
       validation_error = ""
 
       begin
-        JSON::Validator.validate!("../../../schemas/schema_#{service_id}.json", hash)
+        JSON::Validator.validate!("../../../../schemas/schema_#{service_id}.json", hash)
       rescue JSON::Schema::ValidationError => ve
         validation_error = [hash["errmsg"].to_s.strip, "ERROR: #{ve.message}"].join(" ").strip
       end
