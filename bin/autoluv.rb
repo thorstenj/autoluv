@@ -10,24 +10,15 @@ program :description, 'Automatically schedule and check into Southwest flights 2
 
 command :lookup do |c|
   c.syntax = 'autoluv lookup [options]'
-  c.summary = ''
   c.description = 'Lookup departing flight info for a given Southwest confirmation number.'
-  c.example 'description', 'command example'
-  c.option '--confirmation-number NUMBER'
-  c.option '--first-name NAME'
-  c.option '--last-name NAME'
+  c.example 'Typical Usage', 'autoluv lookup -c ABCDEF -f John -l Doe'
+  c.option '-c', '--confirmation-number NUMBER', 'Required'
+  c.option '-f', '--first-name NAME', 'Required'
+  c.option '-l', '--last-name NAME', 'Required'
   c.action do |args, options|
-    while options.confirmation_number.to_s.strip.empty?
-      options.confirmation_number = ask("Confirmation Number: ")
-    end
-
-    while options.first_name.to_s.strip.empty?
-      options.first_name = ask("First Name: ")
-    end
-
-    while options.last_name.to_s.strip.empty?
-      options.last_name = ask("Last Name: ")
-    end
+    raise OptionParser::MissingArgument, "Confirmation Number" if options.confirmation_number.nil?
+    raise OptionParser::MissingArgument, "First Name" if options.first_name.nil?
+    raise OptionParser::MissingArgument, "Last Name" if options.last_name.nil?
 
     sw = AutoLUV::Southwest.new options.confirmation_number, options.first_name, options.last_name
     results = sw.departing_flights
@@ -42,12 +33,40 @@ end
 
 command :checkin do |c|
   c.syntax = 'autoluv checkin [options]'
-  c.summary = ''
-  c.description = ''
-  c.example 'description', 'command example'
-  c.option '--some-switch', 'Some switch that does something'
+  c.description = 'Immediately check into a Southwest flight.'
+  c.example 'Typical Usage', 'autluv checkin -c ABCDEF -f John -l Doe'
+  c.option '-c', '--confirmation-number NUMBER', 'Required'
+  c.option '-f', '--first-name NAME', 'Required'
+  c.option '-l', '--last-name NAME', 'Required'
+  c.option '-b', '--boarding-pass OPTION', String, ["print", "email", "text"]
+  c.option '-p', '--phone NUMBER'
+  c.option '-e', '--email ADDRESS'
   c.action do |args, options|
-    # Do something or c.when_called Autoluv::Commands::Checkin
+    options.default :boarding_pass => "print"
+
+    raise OptionParser::MissingArgument, "--confirmation-number required" if options.confirmation_number.nil?
+    raise OptionParser::MissingArgument, "--first-name required" if options.first_name.nil?
+    raise OptionParser::MissingArgument, "--last-name required" if options.last_name.nil?
+    raise OptionParser::MissingArgument, "--email required when using --boarding-pass email" if options.boarding_pass == "email" && options.email.nil?
+    raise OptionParser::MissingArgument, "--phone required when using --boarding-pass text" if options.boarding_pass == "text" && options.phone.nil?
+
+    case options.boarding_pass
+    when "email"
+      contact_info = options.email
+    when "text"
+      contact_info = options.phone
+    end
+
+    sw = AutoLUV::Southwest.new options.confirmation_number, options.first_name, options.last_name
+    results = sw.checkin options.boarding_pass.to_sym, contact_info
+
+    if results[:success]
+      puts "Check-In Successful"
+    else
+      puts "Check-In Failed"
+    end
+
+    puts results[:message]
   end
 end
 

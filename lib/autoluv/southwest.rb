@@ -51,7 +51,7 @@ module AutoLUV
       results.merge({ :success => true, :single_passenger => upcoming["passengerName1"].nil? })
     end
 
-    def check_in(delivery_option = :print, delivery_value = nil)
+    def checkin(delivery_option = :print, delivery_value = nil)
       get_travel_info
       checkin_travel_alerts
 
