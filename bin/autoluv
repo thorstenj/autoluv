@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
-
-require 'rubygems'
 require 'commander/import'
-require_relative '../lib/autoluv'
-require "pp"
+require 'autoluv'
 
 program :version, '0.0.1'
 program :description, 'Automatically schedule and check into Southwest flights 24 hours beforehand.'
@@ -77,14 +74,46 @@ command :schedule do |c|
   c.summary = ''
   c.description = ''
   c.example 'description', 'command example'
-  c.option '--confirmation-number NUMBER'
-  c.option '--first-name NAME'
-  c.option '--last-name NAME'
-  c.option '--boarding-pass [print, email, text]', String, [:print, :email, :text]
-  c.option '--phone NUMBER'
-  c.option '--email ADDRESS'
+  c.option '-c', '--confirmation-number NUMBER', 'Required'
+  c.option '-f', '--first-name NAME', 'Required'
+  c.option '-l', '--last-name NAME', 'Required'
+  c.option '-b', '--boarding-pass OPTION', String, ["print", "email", "text"], "Valid options are: print, email, or text. If the --boarding-pass switch is not specified, print is assumed."
+  c.option '-p', '--phone NUMBER', "Required if --boarding-pass text is specified."
+  c.option '-e', '--email ADDRESS', "Required if --boarding-pass email is specified."
   c.action do |args, options|
+    options.default :boarding_pass => "print"
 
+    raise OptionParser::MissingArgument, "--confirmation-number required" if options.confirmation_number.nil?
+    raise OptionParser::MissingArgument, "--first-name required" if options.first_name.nil?
+    raise OptionParser::MissingArgument, "--last-name required" if options.last_name.nil?
+    raise OptionParser::MissingArgument, "--email required when using --boarding-pass email" if options.boarding_pass == "email" && options.email.nil?
+    raise OptionParser::MissingArgument, "--phone required when using --boarding-pass text" if options.boarding_pass == "text" && options.phone.nil?
+
+    sw = AutoLUV::Southwest.new options.confirmation_number, options.first_name, options.last_name
+    results = sw.departing_flights
+
+    if results[:success]
+      results[:departing_flights].each do |flight|
+        checkin_time = flight.time
+
+        # offsets are in seconds
+        checkin_offset = checkin_time.utc_offset
+        server_offset = Time.now.utc_offset
+
+        offset_hours = checkin_offset - server_offset
+
+        # we can check in one day beforehand (1 day converted to seconds)
+        checkin_time -= (24 * 60 * 60)
+
+        # compensate for our server time zone
+        checkin_time -= offset_hours
+
+        pp flight.time
+        pp checkin_time
+      end
+    else
+      puts results[:message]
+    end
   end
 end
 
