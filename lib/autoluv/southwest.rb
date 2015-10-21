@@ -20,10 +20,10 @@ module AutoLUV
 
       @cookies = {}
 
-      path = "logs/#{@last_name}, #{@first_name}/#{@confirmation_number}"
+      # TODO: figure out how to log files from a gem
+      @log_path = "~/autoluv/logs/#{@last_name}, #{@first_name}/#{@confirmation_number}"
 
-      FileUtils.mkdir_p path
-      Dir.chdir path
+      FileUtils.mkdir_p @log_path
     end
 
     def departing_flights
@@ -140,7 +140,7 @@ module AutoLUV
     end
 
     def log(response, service_id)
-      File.open("#{service_id}.json", "w") do |f|
+      File.open("#{@log_path}/#{service_id}.json", "w") do |f|
         f.write response.body
       end
     end
@@ -149,7 +149,7 @@ module AutoLUV
       validation_error = ""
 
       begin
-        JSON::Validator.validate!("../../../../schemas/schema_#{service_id}.json", hash)
+        JSON::Validator.validate!("#{__dir__}/../../schemas/schema_#{service_id}.json", hash)
       rescue JSON::Schema::ValidationError => ve
         validation_error = [hash["errmsg"].to_s.strip, "ERROR: #{ve.message}"].join(" ").strip
       end
