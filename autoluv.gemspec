@@ -15,5 +15,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "rest-client", "~> 1.8"
   s.add_runtime_dependency "json-schema", "~> 2.5"
   s.add_runtime_dependency "commander", "~> 4.3"
-  s.required_ruby_version = '~> 2.0'
+  s.add_runtime_dependency "tzinfo", "~> 1.2"
+  s.required_ruby_version = "~> 2.0"
 end

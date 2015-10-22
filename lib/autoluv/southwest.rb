@@ -1,6 +1,7 @@
 require "rest-client"
 require "fileutils"
 require "json-schema"
+require "logger"
 
 module AutoLUV
   class Southwest
@@ -20,10 +21,14 @@ module AutoLUV
 
       @cookies = {}
 
-      # TODO: figure out how to log files from a gem
-      @log_path = "~/autoluv/logs/#{@last_name}, #{@first_name}/#{@confirmation_number}"
+      # i don't like where these log files are being output. is there a better place?
+      # i can't get permission to write them where gem is installed.
+      log_path = "#{Dir.pwd}/autoluv/logs"
+      FileUtils.mkdir_p(log_path) unless File.directory?(log_path)
 
-      FileUtils.mkdir_p @log_path
+      @logger = Logger.new "#{log_path}/#{@last_name}, #{@first_name} - #{@confirmation_number}.log"
+      @logger.level = Logger::DEBUG
+      @logger.datetime_format = "%Y-%m-%d %H:%M:%S "
     end
 
     def departing_flights
@@ -134,15 +139,16 @@ module AutoLUV
 
       @cookies = @cookies.nil? ? response.cookies : @cookies.merge(response.cookies)
 
-      log response, params[:serviceID]
+      hash = JSON.parse response.body
 
-      JSON.parse response.body
+      log hash, params[:serviceID]
+
+      hash
     end
 
-    def log(response, service_id)
-      File.open("#{@log_path}/#{service_id}.json", "w") do |f|
-        f.write response.body
-      end
+    def log(hash, service_id)
+      @logger.debug service_id
+      @logger.debug "\n" + JSON.pretty_generate(hash)
     end
 
     def validate(service_id, hash)
