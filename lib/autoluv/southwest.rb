@@ -21,9 +21,7 @@ module AutoLUV
 
       @cookies = {}
 
-      # i don't like where these log files are being output. is there a better place?
-      # i can't get permission to write them where gem is installed.
-      log_path = "#{Dir.pwd}/autoluv/logs"
+      log_path = "../logs"
       FileUtils.mkdir_p(log_path) unless File.directory?(log_path)
 
       @logger = Logger.new "#{log_path}/#{@last_name}, #{@first_name} - #{@confirmation_number}.log"

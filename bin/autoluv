@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 require 'commander/import'
-require 'autoluv'
+require_relative '../lib/autoluv'
 
 program :version, '0.0.1'
 program :description, 'Automatically schedule and check into Southwest flights 24 hours beforehand.'
