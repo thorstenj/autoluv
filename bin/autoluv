@@ -34,23 +34,21 @@ end
 command :checkin do |c|
   c.syntax = 'autoluv checkin [options]'
   c.description = 'Immediately check into a Southwest flight.'
-  c.example 'Check-in and get boarding passes via email', 'autoluv checkin -b email -e example@email.com -c ABCDEF -f John -l Doe'
-  c.example 'Check-in and get boarding passes via text message', 'autoluv checkin -b text -p 800-555-1212 -c ABCDEF -f John -l Doe'
-  c.example 'Check-in and print boarding passes later', 'autoluv checkin -c ABCDEF -f John -l Doe'
+  c.example 'Example Usage', 'autoluv checkin -b email -e example@email.com -c ABCDEF -f John -l Doe'
   c.option '-c', '--confirmation-number NUMBER', 'Required'
   c.option '-f', '--first-name NAME', 'Required'
   c.option '-l', '--last-name NAME', 'Required'
   c.option '-b', '--boarding-pass OPTION', String, ["print", "email", "text"], "Valid options are: print, email, or text. If the --boarding-pass switch is not specified, print is assumed."
   c.option '-p', '--phone NUMBER', "Required if --boarding-pass text is specified."
   c.option '-e', '--email ADDRESS', "Required if --boarding-pass email is specified."
-  c.option '-n', '--notify'
+  c.option '-n', '--notify', "If specified, send an email notification with results."
   c.action do |args, options|
     options.default :boarding_pass => "print"
 
     raise OptionParser::MissingArgument, "--confirmation-number required" if options.confirmation_number.nil?
     raise OptionParser::MissingArgument, "--first-name required" if options.first_name.nil?
     raise OptionParser::MissingArgument, "--last-name required" if options.last_name.nil?
-    raise OptionParser::MissingArgument, "--email required when using --boarding-pass email" if options.boarding_pass == "email" && options.email.nil?
+    raise OptionParser::MissingArgument, "--email required when using --boarding-pass email or --notify" if (options.boarding_pass == "email" || options.notify) && options.email.nil?
     raise OptionParser::MissingArgument, "--phone required when using --boarding-pass text" if options.boarding_pass == "text" && options.phone.nil?
 
     case options.boarding_pass
@@ -72,7 +70,7 @@ command :checkin do |c|
     end
 
     if options.notify
-      Pony.mail(:to => "hello@alextran.org", :from => 'autoluv@localhost', :subject => subject, :body => body)
+      Pony.mail(:to => options.email, :from => 'autoluv@localhost', :subject => subject, :body => body)
     else
       puts results[:message]
     end
@@ -81,22 +79,21 @@ end
 
 command :schedule do |c|
   c.syntax = 'autoluv schedule [options]'
-  c.summary = ''
-  c.description = ''
-  c.example 'description', 'command example'
+  c.description = 'Schedule check ins based on confirmation number.'
+  c.example 'Example Usage', 'autoluv schedule -c ABCDEF -f John -l Doe -b text -p 555-555-1212'
   c.option '-c', '--confirmation-number NUMBER', 'Required'
   c.option '-f', '--first-name NAME', 'Required'
   c.option '-l', '--last-name NAME', 'Required'
   c.option '-b', '--boarding-pass OPTION', String, ["print", "email", "text"], "Valid options are: print, email, or text. If the --boarding-pass switch is not specified, print is assumed."
   c.option '-p', '--phone NUMBER', "Required if --boarding-pass text is specified."
-  c.option '-e', '--email ADDRESS', "Required if --boarding-pass email is specified."
+  c.option '-e', '--email ADDRESS', "Required (for sending results)"
   c.action do |args, options|
     options.default :boarding_pass => "print"
 
     raise OptionParser::MissingArgument, "--confirmation-number required" if options.confirmation_number.nil?
     raise OptionParser::MissingArgument, "--first-name required" if options.first_name.nil?
     raise OptionParser::MissingArgument, "--last-name required" if options.last_name.nil?
-    raise OptionParser::MissingArgument, "--email required when using --boarding-pass email" if options.boarding_pass == "email" && options.email.nil?
+    raise OptionParser::MissingArgument, "--email required" if options.email.nil?
     raise OptionParser::MissingArgument, "--phone required when using --boarding-pass text" if options.boarding_pass == "text" && options.phone.nil?
 
     sw = AutoLUV::Southwest.new options.confirmation_number, options.first_name, options.last_name
@@ -118,14 +115,8 @@ command :schedule do |c|
         # compensate for our server time zone
         checkin_time -= offset_hours
 
-        ruby_command = "ruby autoluv checkin --notify -c #{options.confirmation_number} -f #{options.first_name} -l #{options.last_name} -b #{options.boarding_pass}"
-
-        case options.boarding_pass
-        when "email"
-          ruby_command += " -e #{options.email}"
-        when "text"
-          ruby_command += " -p #{options.phone}"
-        end
+        ruby_command = "ruby autoluv checkin --notify -c #{options.confirmation_number} -f #{options.first_name} -l #{options.last_name} -b #{options.boarding_pass} -e #{options.email}"
+        ruby_command += " -p #{options.phone}" if options.boarding_pass == "text"
 
         at_command = "echo '#{ruby_command}' | at #{checkin_time.strftime('%I:%M %p %m/%d/%y')}"
         puts at_command
