@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 require 'commander/import'
+require 'pony'
 require_relative '../lib/autoluv'
 
 program :version, '0.0.1'
@@ -40,6 +41,7 @@ command :checkin do |c|
   c.option '-b', '--boarding-pass OPTION', String, ["print", "email", "text"], "Valid options are: print, email, or text. If the --boarding-pass switch is not specified, print is assumed."
   c.option '-p', '--phone NUMBER', "Required if --boarding-pass text is specified."
   c.option '-e', '--email ADDRESS', "Required if --boarding-pass email is specified."
+  c.option '-n', '--notify'
   c.action do |args, options|
     options.default :boarding_pass => "print"
 
@@ -60,12 +62,18 @@ command :checkin do |c|
     results = sw.checkin options.boarding_pass.to_sym, contact_info
 
     if results[:success]
-      puts "Check-In Successful"
+      subject = "[autoluv] Check-In Succeeded"
+      body = "https://www.southwest.com/flight/retrieveCheckinDoc.html?confirmationNumber=#{options.confirmation_number}&firstName=#{options.first_name}&lastName=#{options.last_name}"
     else
-      puts "Check-In Failed"
+      subject = "[autoluv] Check-In Failed"
+      body = results[:message]
     end
 
-    puts results[:message]
+    if options.notify
+      Pony.mail(:to => "hello@alextran.org", :from => 'autoluv@localhost', :subject => subject, :body => body)
+    else
+      puts results[:message]
+    end
   end
 end
 
@@ -108,34 +116,21 @@ command :schedule do |c|
         # compensate for our server time zone
         checkin_time -= offset_hours
 
-        pp flight.time
-        pp checkin_time
+        ruby_command = "ruby autoluv checkin --notify -c #{options.confirmation_number} -f #{options.first_name} -l #{options.last_name} -b #{options.boarding_pass}"
+
+        case options.boarding_pass
+        when "email"
+          ruby_command += " -e #{options.email}"
+        when "text"
+          ruby_command += " -p #{options.phone}"
+        end
+
+        at_command = "echo '#{ruby_command}' | at #{checkin_time.strftime('%I:%M %p %m/%d/%y')}"
+        puts at_command
+        `#{at_command}`
       end
     else
       puts results[:message]
     end
   end
 end
-
-command :list do |c|
-  c.syntax = 'autoluv list [options]'
-  c.summary = ''
-  c.description = ''
-  c.example 'description', 'command example'
-  c.option '--some-switch', 'Some switch that does something'
-  c.action do |args, options|
-    # Do something or c.when_called Autoluv::Commands::List
-  end
-end
-
-command :delete do |c|
-  c.syntax = 'autoluv delete [options]'
-  c.summary = ''
-  c.description = ''
-  c.example 'description', 'command example'
-  c.option '--some-switch', 'Some switch that does something'
-  c.action do |args, options|
-    # Do something or c.when_called Autoluv::Commands::Delete
-  end
-end
-
