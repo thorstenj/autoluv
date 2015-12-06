@@ -4,7 +4,7 @@ Ensure you have your pick of window or aisle seat by letting `autoluv` handle yo
 
 ### Disclaimer
 
-* I wrote this for me (your mileage may vary).
+* I wrote this for me (your mileage may vary)
 * Works on Ubuntu 14.04 (hosted by Digital Ocean)
 
 ### Requirements
@@ -30,6 +30,8 @@ bundle install --deployment
 The command above schedules your check ins and sends you a text with your boarding passes. Both departing and return flights (if applicable) will be scheduled for check in.
 
 An email address is supplied so the results of the check in can be emailed out. That way if something goes wrong, you'll know and can manually check in.
+
+**Note**: Text and email boarding pass notifications are only available for single passenger flights. For multi-passenger flights you will need to print your boarding passes.
 
 ### Deleting a Scheduled Check In
 
