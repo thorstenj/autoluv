@@ -1,5 +1,16 @@
 # autoluv
 
+### Disclaimer
+
+* I wrote this for me (your mileage may vary).
+* Works on Ubuntu 14.04 (hosted by Digital Ocean)
+
+### Requirements
+
+* A *nix based server that will be on when you need to check in
+* Access to the `at` command
+* Sendmail
+
 ### Installation
 
 ```
@@ -8,24 +19,36 @@ cd autoluv
 bundle install --deployment
 ```
 
-### Example
-
-Schedule your check ins automatically and get boarding passes sent to you via text.
+### Scheduling a Check In
 
 ```
-cd bin
-ruby autoluv schedule -c ABCDEF -f Alex -l Tran -b text -p 555-555-1212 -e email@domain.com
+./bin/autoluv schedule -c ABCDEF -f Alex -l Tran -b text -p 555-555-1212 -e email@domain.com
 ````
 
-The email address in the command is used to notify you of the results.
+The command above schedules your check ins and sends you a text with your boarding passes. Both departing and return flights (if applicable) will be scheduled for check in.
 
-For more options you can view the built-in help.
+An email address is supplied so the results of the check in can be emailed out. That way if something goes wrong, you'll know and can manually check in.
+
+### Deleting a Scheduled Check In
+
+The `at` command is used behind the scenes to check in at a specified time. Use the `atq` command to see what's scheduled and then `atrm` to delete one.
+
+See example below.
 
 ```
-ruby autoluv --help
-ruby autoluv schedule --help
+$ atq
+6	Fri Dec 11 08:45:00 2015 a user
+5	Tue Dec 15 14:05:00 2015 a user
+$ atrm 5
+$ atq
+6	Fri Dec 11 08:45:00 2015 a user
 ```
 
-### Disclaimer
+### Further Documentation
 
-This was really written for me. Your mileage may vary.
+```
+./bin/autoluv schedule --help
+./bin/autoluv checkin --help
+./bin/autoluv lookup --help
+```
+
