@@ -114,8 +114,9 @@ command :schedule do |c|
 
         # compensate for our server time zone
         checkin_time -= offset_hours
+        autoluv_path = Dir.pwd.split("/").last == "bin" ? "./autoluv" : "./bin/autoluv"
 
-        ruby_command = "ruby autoluv checkin --notify -c #{options.confirmation_number} -f #{options.first_name} -l #{options.last_name} -b #{options.boarding_pass} -e #{options.email}"
+        ruby_command = "#{autoluv_path} checkin --notify -c #{options.confirmation_number} -f #{options.first_name} -l #{options.last_name} -b #{options.boarding_pass} -e #{options.email}"
         ruby_command += " -p #{options.phone}" if options.boarding_pass == "text"
 
         at_command = "echo '#{ruby_command}' | at #{checkin_time.strftime('%I:%M %p %m/%d/%y')}"
