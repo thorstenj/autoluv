@@ -107,58 +107,58 @@ module AutoLUV
     def view_air_reservation
       params = { :serviceID => "viewAirReservation", :confirmationNumber => @confirmation_number, :confirmationNumberFirstName => @first_name,
         :confirmationNumberLastName => @last_name, :searchType => "ConfirmationNumber" }
-      post params
-    end
-
-    def flight_checkin_new
-      params = { :serviceID => "flightcheckin_new", :recordLocator => @confirmation_number, :firstName => @first_name, :lastName => @last_name }
-      post params
-    end
-
-    def get_all_boarding_pass
-      params = { :serviceID => "getallboardingpass" }
-      post params
-    end
-
-    def email_boarding_pass(email)
-      params = { :serviceID => "viewboardingpass", :optionEmail => "true", :emailAddress => email }
-      post params
-    end
-
-    def text_boarding_pass(phone)
-      phone = phone.to_s.gsub(/\D/, "")
-      params = { :serviceID => "viewboardingpass", :optionText => "true", :phoneArea => phone[0, 3], :phonePrefix => phone[3, 3], :phoneNumber => phone[6, 4] }
-      post params
-    end
-
-    def post(params)
-      params.merge! COMMON_PARAMS
-      response = RestClient.post(POST_URL, params, :cookies => @cookies)
-
-      @cookies = @cookies.nil? ? response.cookies : @cookies.merge(response.cookies)
-
-      hash = JSON.parse response.body
-
-      log hash, params[:serviceID]
-
-      hash
-    end
-
-    def log(hash, service_id)
-      @logger.debug service_id
-      @logger.debug "\n" + JSON.pretty_generate(hash)
-    end
-
-    def validate(service_id, hash)
-      validation_error = ""
-
-      begin
-        JSON::Validator.validate!("#{__dir__}/../../schemas/schema_#{service_id}.json", hash)
-      rescue JSON::Schema::ValidationError => ve
-        validation_error = [hash["errmsg"].to_s.strip, "ERROR: #{ve.message}"].join(" ").strip
+        post params
       end
 
-      validation_error
+      def flight_checkin_new
+        params = { :serviceID => "flightcheckin_new", :recordLocator => @confirmation_number, :firstName => @first_name, :lastName => @last_name }
+        post params
+      end
+
+      def get_all_boarding_pass
+        params = { :serviceID => "getallboardingpass" }
+        post params
+      end
+
+      def email_boarding_pass(email)
+        params = { :serviceID => "viewboardingpass", :optionEmail => "true", :emailAddress => email }
+        post params
+      end
+
+      def text_boarding_pass(phone)
+        phone = phone.to_s.gsub(/\D/, "")
+        params = { :serviceID => "viewboardingpass", :optionText => "true", :phoneArea => phone[0, 3], :phonePrefix => phone[3, 3], :phoneNumber => phone[6, 4] }
+        post params
+      end
+
+      def post(params)
+        params.merge! COMMON_PARAMS
+        response = RestClient.post(POST_URL, params, :cookies => @cookies)
+
+        @cookies = @cookies.nil? ? response.cookies : @cookies.merge(response.cookies)
+
+        hash = JSON.parse response.body
+
+        log hash, params[:serviceID]
+
+        hash
+      end
+
+      def log(hash, service_id)
+        @logger.debug service_id
+        @logger.debug "\n" + JSON.pretty_generate(hash)
+      end
+
+      def validate(service_id, hash)
+        validation_error = ""
+
+        begin
+          JSON::Validator.validate!("#{__dir__}/../../schemas/schema_#{service_id}.json", hash)
+        rescue JSON::Schema::ValidationError => ve
+          validation_error = [hash["errmsg"].to_s.strip, "ERROR: #{ve.message}"].join(" ").strip
+        end
+
+        validation_error
+      end
     end
   end
-end
