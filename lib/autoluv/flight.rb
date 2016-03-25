@@ -14,7 +14,7 @@ module AutoLUV
       dc = flight_info["departCity"]
 
       # 12:15 PM Dallas (Love Field), TX (DAL)
-      m = dc.match /^(?<time>\d{1,2}:\d{2} +(AM|PM)) +(?<city>[A-Z ()\/]+), +(?<state>[A-Z]{2}) +\((?<airport_code>[A-Z]{3})\)$/i
+      m = dc.match /^(?<time>\d{1,2}:\d{2} +(AM|PM)) +(?<city>.+), +(?<state>[A-Z]{2}) +\((?<airport_code>[A-Z]{3})\)$/i
 
       @city = m[:city]
       @state = m[:state]
