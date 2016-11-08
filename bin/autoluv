@@ -59,14 +59,20 @@ command :checkin do |c|
     end
 
     sw = AutoLUV::Southwest.new options.confirmation_number, options.first_name, options.last_name
-    results = sw.checkin options.boarding_pass.to_sym, contact_info
+    results = nil
 
-    if results[:success]
-      subject = "[autoluv] Check-In Succeeded"
-      body = "https://www.southwest.com/flight/retrieveCheckinDoc.html?confirmationNumber=#{options.confirmation_number}&firstName=#{options.first_name}&lastName=#{options.last_name}"
-    else
-      subject = "[autoluv] Check-In Failed"
-      body = results[:message]
+    3.times do |count|
+      results = sw.checkin options.boarding_pass.to_sym, contact_info
+
+      if results[:success]
+        subject = "[autoluv] Check-In Succeeded"
+        body = "https://www.southwest.com/flight/retrieveCheckinDoc.html?confirmationNumber=#{options.confirmation_number}&firstName=#{options.first_name}&lastName=#{options.last_name}"
+        break
+      else
+        sleep 5
+        subject = "[autoluv] Check-In Failed"
+        body = results[:message]
+      end
     end
 
     if options.notify
