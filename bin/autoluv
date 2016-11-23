@@ -3,7 +3,7 @@ require "rubygems"
 require "bundler/setup"
 require "commander/import"
 require "pony"
-require_relative "../lib/autoluv"
+require "southwestluv"
 
 program :version, "0.0.1"
 program :description, "Automatically schedule and check into Southwest flights 24 hours beforehand."
@@ -20,13 +20,16 @@ command :lookup do |c|
     raise OptionParser::MissingArgument, "First Name" if options.first_name.nil?
     raise OptionParser::MissingArgument, "Last Name" if options.last_name.nil?
 
-    sw = AutoLUV::Southwest.new options.confirmation_number, options.first_name, options.last_name
-    results = sw.departing_flights
+    itinerary = SouthwestLUV::Southwest.view_reservation options.confirmation_number, options.first_name, options.last_name
 
-    if results[:success]
-      results[:departing_flights].each { |flight| puts flight }
+    if itinerary
+      itinerary.destinations.each do |destination|
+        destination.segments.each do |segment|
+          puts segment
+        end
+      end
     else
-      puts results[:message]
+      puts "Unable to retrieve reservation details."
     end
   end
 end
@@ -34,51 +37,32 @@ end
 command :checkin do |c|
   c.syntax = "autoluv checkin [options]"
   c.description = "Immediately check into a Southwest flight."
-  c.example "Example Usage", "autoluv checkin -b email -e example@email.com -c ABCDEF -f John -l Doe"
+  c.example "Example Usage", "autoluv checkin -c ABCDEF -f John -l Doe"
   c.option "-c", "--confirmation-number NUMBER", "Required"
   c.option "-f", "--first-name NAME", "Required"
   c.option "-l", "--last-name NAME", "Required"
-  c.option "-b", "--boarding-pass OPTION", String, ["print", "email", "text"], "Valid options are: print, email, or text. If the --boarding-pass switch is not specified, print is assumed."
-  c.option "-p", "--phone NUMBER", "Required if --boarding-pass text is specified."
-  c.option "-e", "--email ADDRESS", "Required if --boarding-pass email is specified."
+  c.option "-e", "--email ADDRESS", "Required if --notify is specified."
   c.option "-n", "--notify", "If specified, send an email notification with results."
   c.action do |args, options|
-    options.default :boarding_pass => "print"
-
     raise OptionParser::MissingArgument, "--confirmation-number required" if options.confirmation_number.nil?
     raise OptionParser::MissingArgument, "--first-name required" if options.first_name.nil?
     raise OptionParser::MissingArgument, "--last-name required" if options.last_name.nil?
-    raise OptionParser::MissingArgument, "--email required when using --boarding-pass email or --notify" if (options.boarding_pass == "email" || options.notify) && options.email.nil?
-    raise OptionParser::MissingArgument, "--phone required when using --boarding-pass text" if options.boarding_pass == "text" && options.phone.nil?
+    raise OptionParser::MissingArgument, "--email required when using --notify" if options.notify && options.email.nil?
 
-    case options.boarding_pass
-    when "email"
-      contact_info = options.email
-    when "text"
-      contact_info = options.phone
-    end
+    passengers = SouthwestLUV::Southwest.check_in options.confirmation_number, options.first_name, options.last_name
 
-    sw = AutoLUV::Southwest.new options.confirmation_number, options.first_name, options.last_name
-    results = nil
-
-    3.times do |count|
-      results = sw.checkin options.boarding_pass.to_sym, contact_info
-
-      if results[:success]
-        subject = "[autoluv] Check-In Succeeded"
-        body = "https://www.southwest.com/flight/retrieveCheckinDoc.html?confirmationNumber=#{options.confirmation_number}&firstName=#{options.first_name}&lastName=#{options.last_name}"
-        break
-      else
-        sleep 5
-        subject = "[autoluv] Check-In Failed"
-        body = results[:message]
-      end
+    if passengers
+      puts passengers.join("\n")
+      subject =
+    else
+      puts "Unable to check-in."
     end
 
     if options.notify
+      subject = passengers ? "[autoluv] Check-In Succeeded" : "Check-In Failed"
+      body = passengers.join("\n") if passengers
+
       Pony.mail(:to => options.email, :from => "autoluv@localhost", :subject => subject, :body => body)
-    else
-      puts results[:message]
     end
   end
 end

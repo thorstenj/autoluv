@@ -1,7 +1,5 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-gem 'commander', '~>4.3.5'
-gem 'pony', '~>1.11'
-gem 'tzinfo', '~>1.2.2'
-gem 'rest-client', '~>1.8.0'
-gem 'json-schema', '~>2.5.1'
+gem "commander", "~> 4.4"
+gem "pony", "~> 1.11"
+gem "southwestluv", "~> 0.1", :path => "/Volumes/Home/code/southwestluv"
