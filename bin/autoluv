@@ -20,16 +20,17 @@ command :lookup do |c|
     raise OptionParser::MissingArgument, "First Name" if options.first_name.nil?
     raise OptionParser::MissingArgument, "Last Name" if options.last_name.nil?
 
-    itinerary = SouthwestLUV::Southwest.view_reservation options.confirmation_number, options.first_name, options.last_name
+    result = SouthwestLUV::Southwest.view_reservation options.confirmation_number, options.first_name, options.last_name
 
-    if itinerary
+    if result.success?
+      itinerary = result.itinerary
       itinerary.destinations.each do |destination|
         destination.segments.each do |segment|
           puts segment
         end
       end
     else
-      puts "Unable to retrieve reservation details."
+      puts result.message
     end
   end
 end
@@ -49,13 +50,13 @@ command :checkin do |c|
     raise OptionParser::MissingArgument, "--last-name required" if options.last_name.nil?
     raise OptionParser::MissingArgument, "--email required when using --notify" if options.notify && options.email.nil?
 
-    passengers = SouthwestLUV::Southwest.check_in options.confirmation_number, options.first_name, options.last_name
+    result = SouthwestLUV::Southwest.check_in options.confirmation_number, options.first_name, options.last_name
+    passengers = result.passengers
 
-    if passengers
+    if result.success?
       puts passengers.join("\n")
-      subject =
     else
-      puts "Unable to check-in."
+      puts result.message
     end
 
     if options.notify
@@ -74,24 +75,20 @@ command :schedule do |c|
   c.option "-c", "--confirmation-number NUMBER", "Required"
   c.option "-f", "--first-name NAME", "Required"
   c.option "-l", "--last-name NAME", "Required"
-  c.option "-b", "--boarding-pass OPTION", String, ["print", "email", "text"], "Valid options are: print, email, or text. If the --boarding-pass switch is not specified, print is assumed."
-  c.option "-p", "--phone NUMBER", "Required if --boarding-pass text is specified."
   c.option "-e", "--email ADDRESS", "Required (for sending results)"
   c.action do |args, options|
-    options.default :boarding_pass => "print"
-
     raise OptionParser::MissingArgument, "--confirmation-number required" if options.confirmation_number.nil?
     raise OptionParser::MissingArgument, "--first-name required" if options.first_name.nil?
     raise OptionParser::MissingArgument, "--last-name required" if options.last_name.nil?
     raise OptionParser::MissingArgument, "--email required" if options.email.nil?
-    raise OptionParser::MissingArgument, "--phone required when using --boarding-pass text" if options.boarding_pass == "text" && options.phone.nil?
 
-    sw = AutoLUV::Southwest.new options.confirmation_number, options.first_name, options.last_name
-    results = sw.departing_flights
+    result = SouthwestLUV::Southwest.view_reservation options.confirmation_number, options.first_name, options.last_name
 
-    if results[:success]
-      results[:departing_flights].each do |flight|
-        checkin_time = flight.time
+    if result.success?
+      itinerary = result.itinerary
+      itinerary.destinations.each do |destination|
+        # just need the first leg of the flight to check in
+        checkin_time = destination.segments[0].departing_time
 
         # offsets are in seconds
         checkin_offset = checkin_time.utc_offset
@@ -106,15 +103,14 @@ command :schedule do |c|
         checkin_time -= offset_hours
         autoluv_path = Dir.pwd.split("/").last == "bin" ? "./autoluv" : "./bin/autoluv"
 
-        ruby_command = "#{autoluv_path} checkin --notify -c #{options.confirmation_number} -f #{options.first_name} -l #{options.last_name} -b #{options.boarding_pass} -e #{options.email}"
-        ruby_command += " -p #{options.phone}" if options.boarding_pass == "text"
+        ruby_command = "#{autoluv_path} checkin --notify -c #{options.confirmation_number} -f #{options.first_name} -l #{options.last_name} -e #{options.email}"
 
         at_command = "echo '#{ruby_command}' | at #{checkin_time.strftime('%I:%M %p %m/%d/%y')}"
         # puts at_command
         `#{at_command}`
       end
     else
-      puts results[:message]
+      puts result.message
     end
   end
 end
