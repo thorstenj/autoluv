@@ -13,7 +13,7 @@ Ensure you have your pick of window or aisle seat by letting `autoluv` handle yo
 * Access to the `at` command
 * Sendmail
 
-### Installation
+### Clean Install
 
 ```
 git clone https://github.com/byalextran/autoluv.git
@@ -21,17 +21,29 @@ cd autoluv
 bundle install --deployment
 ```
 
+### Upgrading
+
+I pulled the Southwest check-in code into a gem called [luvwrapper](https://github.com/byalextran/luvwrapper).
+
+You'll need to update the dependencies with the following:
+
+```
+cd autoluv
+git pull
+bundle
+```
+
+Also, some of the check-in parameters have been removed. So I recommend you `atrm` all scheduled check-ins and reschedule them.
+
 ### Schedule a Check In
 
 ```
-./bin/autoluv schedule -c ABCDEF -f Alex -l Tran -b text -p 555-555-1212 -e email@domain.com
+./bin/autoluv schedule -c ABCDEF -f Alex -l Tran -e email@domain.com
 ````
 
-The command above schedules your check ins and sends you a text with your boarding passes. Both departing and return flights (if applicable) will be scheduled for check in.
+Both departing and return flights (if applicable) will be scheduled for check in.
 
 An email address is supplied so the results of the check in can be emailed out. That way if something goes wrong, you'll know and can manually check in.
-
-**Note**: Text and email boarding pass notifications are only available for single passenger flights. For multi-passenger flights you will need to print your boarding passes.
 
 ### Deleting a Scheduled Check In
 
@@ -55,4 +67,3 @@ $ atq
 ./bin/autoluv checkin --help
 ./bin/autoluv lookup --help
 ```
-
