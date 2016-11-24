@@ -1,10 +1,3 @@
-PATH
-  remote: /Volumes/Home/code/southwestluv
-  specs:
-    southwestluv (0.1.0)
-      json-schema (~> 2.7)
-      rest-client (~> 2.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -19,6 +12,9 @@ GEM
       domain_name (~> 0.5)
     json-schema (2.7.0)
       addressable (>= 2.4)
+    luvwrapper (0.1.3)
+      json-schema (~> 2.7)
+      rest-client (~> 2.0)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
     mime-types (2.99)
@@ -39,8 +35,8 @@ PLATFORMS
 
 DEPENDENCIES
   commander (~> 4.4)
+  luvwrapper (~> 0.1)
   pony (~> 1.11)
-  southwestluv (~> 0.1)!
 
 BUNDLED WITH
    1.13.6

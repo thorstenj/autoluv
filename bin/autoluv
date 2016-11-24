@@ -3,7 +3,7 @@ require "rubygems"
 require "bundler/setup"
 require "commander/import"
 require "pony"
-require "southwestluv"
+require "luvwrapper"
 
 program :version, "0.0.1"
 program :description, "Automatically schedule and check into Southwest flights 24 hours beforehand."
@@ -20,7 +20,7 @@ command :lookup do |c|
     raise OptionParser::MissingArgument, "First Name" if options.first_name.nil?
     raise OptionParser::MissingArgument, "Last Name" if options.last_name.nil?
 
-    result = SouthwestLUV::Southwest.view_reservation options.confirmation_number, options.first_name, options.last_name
+    result = Luvwrapper.view_reservation options.confirmation_number, options.first_name, options.last_name
 
     if result.success?
       itinerary = result.itinerary
@@ -50,7 +50,7 @@ command :checkin do |c|
     raise OptionParser::MissingArgument, "--last-name required" if options.last_name.nil?
     raise OptionParser::MissingArgument, "--email required when using --notify" if options.notify && options.email.nil?
 
-    result = SouthwestLUV::Southwest.check_in options.confirmation_number, options.first_name, options.last_name
+    result = Luvwrapper.check_in options.confirmation_number, options.first_name, options.last_name
     passengers = result.passengers
 
     if result.success?
@@ -82,7 +82,7 @@ command :schedule do |c|
     raise OptionParser::MissingArgument, "--last-name required" if options.last_name.nil?
     raise OptionParser::MissingArgument, "--email required" if options.email.nil?
 
-    result = SouthwestLUV::Southwest.view_reservation options.confirmation_number, options.first_name, options.last_name
+    result = Luvwrapper.view_reservation options.confirmation_number, options.first_name, options.last_name
 
     if result.success?
       itinerary = result.itinerary
