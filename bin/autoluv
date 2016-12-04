@@ -60,8 +60,15 @@ command :checkin do |c|
     end
 
     if options.notify
-      subject = passengers ? "[autoluv] Check-In Succeeded" : "Check-In Failed"
-      body = passengers.join("\n") if passengers
+      if result.success?
+        subject = "[autoluv] Check-In Succeeded"
+        body = passengers.join("\n")
+      else
+        subject = "[autoluv] Check-In Failed"
+        body = %(You will need to manually check in here:
+
+https://www.southwest.com/flight/retrieveCheckinDoc.html?confirmationNumber=#{options.confirmation_number}&firstName=#{options.first_name}&lastName=#{options.last_name})
+      end
 
       Pony.mail(:to => options.email, :from => "autoluv@localhost", :subject => subject, :body => body)
     end
