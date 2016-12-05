@@ -33,17 +33,17 @@ git pull
 bundle
 ```
 
-Also, some of the check-in parameters have been removed. So I recommend you `atrm` all scheduled check-ins and reschedule them.
-
 ### Schedule a Check In
 
 ```
-./bin/autoluv schedule -c ABCDEF -f Alex -l Tran -e email@domain.com
+./bin/autoluv schedule -c ABCDEF -f Alex -l Tran -e email@domain.com -b text -p 555-555-1212
 ````
 
-Both departing and return flights (if applicable) will be scheduled for check in.
+The command above schedules your check ins and sends you a text with your boarding passes. Both departing and return flights (if applicable) will be scheduled for check in.
 
 An email address is supplied so the results of the check in can be emailed out. That way if something goes wrong, you'll know and can manually check in.
+
+Note: I haven't been able to test if email and text boarding passes work with multi-passenger itineraries. With the old API it wouldn't work. Not sure if it's supported in the new API. All that to say, if you have a flight with multiple passengers and your check-in succeeded but you don't get your boarding passes emailed or texted to you, chances are it's not supported.
 
 ### Deleting a Scheduled Check In
 
