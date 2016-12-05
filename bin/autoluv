@@ -42,15 +42,26 @@ command :checkin do |c|
   c.option "-c", "--confirmation-number NUMBER", "Required"
   c.option "-f", "--first-name NAME", "Required"
   c.option "-l", "--last-name NAME", "Required"
-  c.option "-e", "--email ADDRESS", "Required if --notify is specified."
+  c.option "-b", "--boarding-pass OPTION", String, ["email", "text"], "Valid options are: email or text."
+  c.option "-p", "--phone NUMBER", "Required if --boarding-pass text is specified."
+  c.option "-e", "--email ADDRESS", "Required if --boarding-pass email or --notify is specified."
   c.option "-n", "--notify", "If specified, send an email notification with results."
   c.action do |args, options|
     raise OptionParser::MissingArgument, "--confirmation-number required" if options.confirmation_number.nil?
     raise OptionParser::MissingArgument, "--first-name required" if options.first_name.nil?
     raise OptionParser::MissingArgument, "--last-name required" if options.last_name.nil?
-    raise OptionParser::MissingArgument, "--email required when using --notify" if options.notify && options.email.nil?
+    raise OptionParser::MissingArgument, "--email required when using --boarding-pass email or --notify" if (options.boarding_pass == "email" || options.notify) && options.email.nil?
+    raise OptionParser::MissingArgument, "--phone required when using --boarding-pass text" if options.boarding_pass == "text" && options.phone.nil?
 
-    result = Luvwrapper.check_in options.confirmation_number, options.first_name, options.last_name
+    boarding_pass_delivery_method = options.boarding_pass.to_sym if options.boarding_pass
+    case boarding_pass_delivery_method
+    when :email
+      boarding_pass_delivery_value = options.email
+    when :text
+      boarding_pass_delivery_value = options.phone
+    end
+
+    result = Luvwrapper.check_in options.confirmation_number, options.first_name, options.last_name, boarding_pass_delivery_method, boarding_pass_delivery_value
     passengers = result.passengers
 
     if result.success?
@@ -82,12 +93,15 @@ command :schedule do |c|
   c.option "-c", "--confirmation-number NUMBER", "Required"
   c.option "-f", "--first-name NAME", "Required"
   c.option "-l", "--last-name NAME", "Required"
-  c.option "-e", "--email ADDRESS", "Required (for sending results)"
+  c.option "-b", "--boarding-pass OPTION", String, ["email", "text"], "Valid options are: email or text."
+  c.option "-p", "--phone NUMBER", "Required if --boarding-pass text is specified."
+  c.option "-e", "--email ADDRESS", "Required (for sending results) for use with --boarding-pass email."
   c.action do |args, options|
     raise OptionParser::MissingArgument, "--confirmation-number required" if options.confirmation_number.nil?
     raise OptionParser::MissingArgument, "--first-name required" if options.first_name.nil?
     raise OptionParser::MissingArgument, "--last-name required" if options.last_name.nil?
     raise OptionParser::MissingArgument, "--email required" if options.email.nil?
+    raise OptionParser::MissingArgument, "--phone required when using --boarding-pass text" if options.boarding_pass == "text" && options.phone.nil?
 
     result = Luvwrapper.view_reservation options.confirmation_number, options.first_name, options.last_name
 
@@ -111,6 +125,9 @@ command :schedule do |c|
         autoluv_path = Dir.pwd.split("/").last == "bin" ? "./autoluv" : "./bin/autoluv"
 
         ruby_command = "#{autoluv_path} checkin --notify -c #{options.confirmation_number} -f #{options.first_name} -l #{options.last_name} -e #{options.email}"
+
+        ruby_command << " -b #{options.boarding_pass}" if options.boarding_pass
+        ruby_command << " -p #{options.phone}" if options.boarding_pass == "text"
 
         at_command = "echo '#{ruby_command}' | at #{checkin_time.strftime('%I:%M %p %m/%d/%y')}"
         # puts at_command
