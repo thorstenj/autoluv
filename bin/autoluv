@@ -2,10 +2,11 @@
 require "rubygems"
 require "bundler/setup"
 require "commander/import"
+require "dotenv/load"
 require "pony"
 require "luvwrapper"
 
-program :version, "0.2.0"
+program :version, "0.3.0"
 program :description, "Automatically schedule and check into Southwest flights 24 hours beforehand."
 
 command :lookup do |c|
@@ -81,7 +82,26 @@ command :checkin do |c|
 https://www.southwest.com/flight/retrieveCheckinDoc.html?confirmationNumber=#{options.confirmation_number}&firstName=#{options.first_name}&lastName=#{options.last_name})
       end
 
-      Pony.mail(:to => options.email, :from => "autoluv@localhost", :subject => subject, :body => body)
+      pony_options = {
+        to: options.email,
+        from: ENV["FROM_EMAIL"].nil? ? "autoluv@127.0.0.1" : "#{ENV["FROM_EMAIL"]}",
+        subject: subject,
+        body: body,
+      }
+
+      smtp_options = {
+        via: :smtp,
+        via_options: {
+          address: "#{ENV["SMTP_SERVER"]}",
+          port: "#{ENV["PORT"]}",
+          user_name: "#{ENV["USER_NAME"]}",
+          password: "#{ENV["PASSWORD"]}"
+        }
+      }
+
+      pony_options.merge! smtp_options if ENV["SMTP_SERVER"] && ENV["PORT"] && ENV["USER_NAME"] && ENV["PASSWORD"]
+
+      Pony.mail(pony_options)
     end
   end
 end
