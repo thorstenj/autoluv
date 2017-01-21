@@ -10,6 +10,7 @@ Ensure you have your pick of window or aisle seat by letting `autoluv` handle yo
 ### Requirements
 
 * A *nix based server that will be on when you need to check in
+
 * Ruby installed
 * The `at` package installed
 * An SMTP server (recommended) or Sendmail properly configured
