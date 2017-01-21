@@ -5,7 +5,7 @@ require "commander/import"
 require "pony"
 require "luvwrapper"
 
-program :version, "0.0.1"
+program :version, "0.2.0"
 program :description, "Automatically schedule and check into Southwest flights 24 hours beforehand."
 
 command :lookup do |c|
