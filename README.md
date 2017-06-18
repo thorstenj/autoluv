@@ -63,7 +63,7 @@ You'll need to update the dependencies with the following:
 ```
 cd autoluv
 git pull origin master
-bundle
+bundle install --deployment
 ```
 
 It's also a good idea to do this periodically.
