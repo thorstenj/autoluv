@@ -13,7 +13,7 @@ GEM
       domain_name (~> 0.5)
     json-schema (2.8.0)
       addressable (>= 2.4)
-    luvwrapper (0.3.1)
+    luvwrapper (0.3.2)
       json-schema (~> 2.7)
       rest-client (~> 2.0)
     mail (2.6.4)
@@ -39,7 +39,7 @@ PLATFORMS
 DEPENDENCIES
   commander (~> 4.4)
   dotenv (~> 2.1)
-  luvwrapper (~> 0.3)
+  luvwrapper (~> 0.3.2)
   pony (~> 1.11)
 
 BUNDLED WITH
