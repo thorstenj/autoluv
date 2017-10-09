@@ -6,7 +6,7 @@ require "dotenv/load"
 require "pony"
 require "luvwrapper"
 
-program :version, "0.3.0"
+program :version, "0.3.1"
 program :description, "Automatically schedule and check into Southwest flights 24 hours beforehand."
 
 command :lookup do |c|
@@ -20,6 +20,8 @@ command :lookup do |c|
     raise OptionParser::MissingArgument, "Confirmation Number" if options.confirmation_number.nil?
     raise OptionParser::MissingArgument, "First Name" if options.first_name.nil?
     raise OptionParser::MissingArgument, "Last Name" if options.last_name.nil?
+
+    options.confirmation_number.upcase!
 
     result = Luvwrapper.view_reservation options.confirmation_number, options.first_name, options.last_name
 
@@ -53,6 +55,8 @@ command :checkin do |c|
     raise OptionParser::MissingArgument, "--last-name required" if options.last_name.nil?
     raise OptionParser::MissingArgument, "--email required when using --boarding-pass email or --notify" if (options.boarding_pass == "email" || options.notify) && options.email.nil?
     raise OptionParser::MissingArgument, "--phone required when using --boarding-pass text" if options.boarding_pass == "text" && options.phone.nil?
+
+    options.confirmation_number.upcase!
 
     boarding_pass_delivery_method = options.boarding_pass.to_sym if options.boarding_pass
     case boarding_pass_delivery_method
@@ -122,6 +126,8 @@ command :schedule do |c|
     raise OptionParser::MissingArgument, "--last-name required" if options.last_name.nil?
     raise OptionParser::MissingArgument, "--email required" if options.email.nil?
     raise OptionParser::MissingArgument, "--phone required when using --boarding-pass text" if options.boarding_pass == "text" && options.phone.nil?
+
+    options.confirmation_number.upcase!
 
     result = Luvwrapper.view_reservation options.confirmation_number, options.first_name, options.last_name
 
